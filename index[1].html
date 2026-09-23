@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resell Radar — AI Resell Analyzer</title>
+<meta name="description" content="Analyze clothing before you buy it. Resell Radar helps resellers estimate resale potential, margin and risk.">
+<style>
+:root{--bg:#08090c;--card:#111319;--card2:#171922;--text:#f5f6f8;--muted:#9da3b0;--line:#282c36;--accent:#fff;--good:#b9f6d3;--warn:#ffe3a3}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#20232d 0,#08090c 45%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:inherit}.wrap{max-width:1080px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;padding:8px 0 30px}.brand{font-weight:900;letter-spacing:-.04em;font-size:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px}
+.hero{text-align:center;padding:46px 0 35px}.eyebrow{color:var(--muted);font-size:12px;letter-spacing:.16em;text-transform:uppercase}.hero h1{font-size:clamp(42px,8vw,78px);line-height:.95;letter-spacing:-.065em;margin:14px 0}.hero p{max-width:640px;margin:20px auto;color:var(--muted);font-size:17px;line-height:1.6}
+.card{background:linear-gradient(180deg,#12151b,#0e1015);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 20px 80px rgba(0,0,0,.25)}.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+.upload{border:1px dashed #414652;border-radius:18px;min-height:270px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0b0d11;cursor:pointer}.upload img{width:100%;height:100%;object-fit:contain;max-height:360px}.upload input{display:none}.upload-content{text-align:center;padding:30px;color:var(--muted)}.upload-content strong{display:block;color:var(--text);font-size:18px;margin-bottom:8px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.field label{display:block;font-size:12px;color:var(--muted);margin:0 0 7px}.field input,.field select{width:100%;border:1px solid var(--line);background:#0b0d11;color:var(--text);padding:13px;border-radius:12px;outline:none}.field input:focus,.field select:focus{border-color:#6d7482}
+.full{grid-column:1/-1}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-weight:900;letter-spacing:.04em;cursor:pointer;background:#fff;color:#07080a;margin-top:16px}.btn:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:11px;color:#747b88;line-height:1.5;margin-top:12px}.hidden{display:none!important}
+.result-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.status{display:inline-flex;border:1px solid #2d5943;background:#10251a;color:var(--good);padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800}.result h2{font-size:28px;margin:10px 0 4px;letter-spacing:-.04em}.sub{color:var(--muted);font-size:13px}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}.metric{background:var(--card2);border:1px solid var(--line);padding:16px;border-radius:15px}.metric small{color:var(--muted);display:block;margin-bottom:7px}.metric b{font-size:23px}.bar{height:8px;background:#272b34;border-radius:99px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;width:72%;background:#c9ffd9}.advice{border-top:1px solid var(--line);padding-top:18px;color:#cbd0d8;line-height:1.6;font-size:14px}.loading{padding:35px;text-align:center;color:var(--muted)}.spinner{width:32px;height:32px;border:3px solid #2b2f38;border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}@keyframes spin{to{transform:rotate(360deg)}}
+footer{color:#666d78;text-align:center;padding:35px 0;font-size:12px}.small-btn{background:none;border:1px solid var(--line);color:var(--muted);padding:9px 12px;border-radius:10px;cursor:pointer}
+@media(max-width:780px){.grid{grid-template-columns:1fr}.hero{padding-top:20px}.fields{grid-template-columns:1fr}.full{grid-column:auto}.wrap{padding:16px}.card{padding:17px;border-radius:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav"><div class="brand">RESell<span style="opacity:.45">RADAR</span></div><div class="pill">AI RESELL ANALYZER</div></nav>
+  <section class="hero">
+    <div class="eyebrow">Buy smarter. Sell with a plan.</div>
+    <h1>Should you buy it?</h1>
+    <p>Upload a clothing item and get an analysis of what it is, its resale potential, estimated margin and the risks before you spend your money.</p>
+  </section>
+
+  <main class="grid">
+    <section class="card">
+      <label class="upload" for="photo">
+        <input id="photo" type="file" accept="image/*">
+        <div id="uploadContent" class="upload-content"><strong>Upload item photo</strong><span>JPG, PNG or WEBP · use a clear photo</span></div>
+        <img id="preview" class="hidden" alt="Uploaded item">
+      </label>
+
+      <div class="fields">
+        <div class="field"><label>Brand (optional)</label><input id="brand" placeholder="e.g. Nike"></div>
+        <div class="field"><label>Item / model (optional)</label><input id="item" placeholder="e.g. vintage hoodie"></div>
+        <div class="field"><label>Size</label><input id="size" placeholder="M"></div>
+        <div class="field"><label>Condition</label>
+          <select id="condition"><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option></select>
+        </div>
+        <div class="field full"><label>Purchase price (€)</label><input id="price" type="number" min="0" step="0.01" placeholder="15"></div>
+      </div>
+      <button id="analyze" class="btn">ANALYZE ITEM</button>
+      <div class="note">The analysis is an estimate, not a guarantee of sale price. Live market pricing requires a connected market-data source.</div>
+    </section>
+
+    <section id="resultCard" class="card">
+      <div id="empty">
+        <div class="eyebrow">Your analysis</div>
+        <h2 style="font-size:32px;letter-spacing:-.04em;margin:14px 0 8px">Nothing analyzed yet.</h2>
+        <p class="sub" style="line-height:1.6">Upload a photo, add your purchase price and press Analyze Item.</p>
+      </div>
+      <div id="loading" class="loading hidden"><div class="spinner"></div><b>Analyzing the item…</b><div style="margin-top:8px">Identifying the clothing and calculating the opportunity.</div></div>
+      <div id="result" class="hidden"></div>
+    </section>
+  </main>
+  <footer>RESellRADAR · Prototype ready for deployment · Do not treat estimates as financial guarantees.</footer>
+</div>
+
+<script>
+const photo = document.getElementById('photo');
+const preview = document.getElementById('preview');
+const uploadContent = document.getElementById('uploadContent');
+const analyze = document.getElementById('analyze');
+const empty = document.getElementById('empty');
+const loading = document.getElementById('loading');
+const result = document.getElementById('result');
+
+photo.addEventListener('change', () => {
+  const f = photo.files?.[0]; if(!f) return;
+  preview.src = URL.createObjectURL(f);
+  preview.classList.remove('hidden'); uploadContent.classList.add('hidden');
+});
+
+function demoAnalysis(price){
+  const p = Number(price || 0);
+  const base = p > 0 ? p : 20;
+  const low = Math.max(base + 8, Math.round(base * 1.75));
+  const high = Math.max(low + 5, Math.round(base * 2.35));
+  const maxBuy = Math.max(5, Math.round(low * .62));
+  const profitLow = Math.max(0, low-base), profitHigh = Math.max(0, high-base);
+  return {
+    verdict: profitHigh >= base*.7 ? "Potentially good buy" : "Proceed carefully",
+    item: document.getElementById('item').value || "Clothing item",
+    brand: document.getElementById('brand').value || "Brand not specified",
+    resale_low: low, resale_high: high, profit_low: profitLow, profit_high: profitHigh,
+    max_buy: maxBuy, demand: "Medium", risk: "Medium",
+    reason: "This is currently demo-mode analysis. Connect the server-side AI endpoint and real market data before presenting these numbers as live market estimates."
+  };
+}
+function render(x){
+  empty.classList.add('hidden'); loading.classList.add('hidden'); result.classList.remove('hidden');
+  const good = String(x.verdict||'').toLowerCase().includes('good');
+  result.innerHTML = `
+    <div class="result-head"><div><div class="eyebrow">Analysis result</div><h2>${escapeHtml(x.verdict||'Analysis complete')}</h2><div class="sub">${escapeHtml(x.brand||'Unknown brand')} · ${escapeHtml(x.item||'Unknown item')}</div></div><span class="status">${good?'BUY CANDIDATE':'CHECK FIRST'}</span></div>
+    <div class="metrics">
+      <div class="metric"><small>Estimated resale</small><b>€${num(x.resale_low)}–€${num(x.resale_high)}</b></div>
+      <div class="metric"><small>Potential profit</small><b>€${num(x.profit_low)}–€${num(x.profit_high)}</b></div>
+      <div class="metric"><small>Max. buy price</small><b>€${num(x.max_buy)}</b></div>
+      <div class="metric"><small>Demand / Risk</small><b>${escapeHtml(x.demand||'—')} / ${escapeHtml(x.risk||'—')}</b></div>
+    </div>
+    <div class="advice"><b>Why:</b><br>${escapeHtml(x.reason||'No explanation returned.')}</div>
+    <button class="small-btn" style="margin-top:16px" onclick="resetApp()">Analyze another item</button>`;
+}
+function num(v){return Number(v||0).toFixed(0)}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function resetApp(){result.classList.add('hidden');empty.classList.remove('hidden');photo.value='';preview.classList.add('hidden');uploadContent.classList.remove('hidden')}
+analyze.addEventListener('click', async ()=>{
+  const f = photo.files?.[0];
+  if(!f){alert('Najprv nahraj fotku.');return}
+  loading.classList.remove('hidden'); empty.classList.add('hidden'); result.classList.add('hidden'); analyze.disabled=true;
+  try{
+    const fd = new FormData();
+    fd.append('image', f);
+    fd.append('brand', document.getElementById('brand').value);
+    fd.append('item', document.getElementById('item').value);
+    fd.append('size', document.getElementById('size').value);
+    fd.append('condition', document.getElementById('condition').value);
+    fd.append('purchasePrice', document.getElementById('price').value);
+    const r = await fetch('/api/analyze', {method:'POST', body:fd});
+    if(!r.ok) throw new Error('API unavailable');
+    render(await r.json());
+  }catch(e){
+    // The page still works locally as a demo. On deployment, /api/analyze enables real AI.
+    setTimeout(()=>render(demoAnalysis(document.getElementById('price').value)),650);
+  }finally{analyze.disabled=false}
+});
+</script>
+</body>
+</html>
